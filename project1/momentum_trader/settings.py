@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'portfolio',
     'trading',
+    'trading_app',
+    'portfolio_app',
 ]
 
 MIDDLEWARE = [
