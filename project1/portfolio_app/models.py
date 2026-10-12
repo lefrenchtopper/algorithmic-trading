@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Portfolio(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -15,7 +14,7 @@ class Portfolio(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = "portfolios"
+        db_table = "Portfolios"
         ordering = ["name"]
 
 
@@ -38,24 +37,25 @@ class Position(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "positions"
+        db_table = "Positions"
         unique_together = ("portfolio", "stock")
         ordering = ["-current_value"]
 
+
 class Trade(models.Model):
-    TRADE_TYPES = (
+    TRADE_TYPES = [
         ("BUY", "Buy"),
         ("SELL", "Sell"),
-    )
+    ]
 
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ("PENDING", "Pending"),
         ("SUBMITTED", "Submitted"),
         ("FILLED", "Filled"),
         ("PARTIALLY_FILLED", "Partially Filled"),
         ("CANCELLED", "Cancelled"),
         ("REJECTED", "Rejected"),
-    )
+    ]
 
     portfolio = models.ForeignKey(
         Portfolio, on_delete=models.CASCADE, related_name="trades"
@@ -72,24 +72,23 @@ class Trade(models.Model):
         max_digits=15, decimal_places=2, null=True, blank=True
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
-    external_order_id = models.CharField(max_length=100, blank=True)
-    snaptrade_order_id = models.CharField(max_length=100, blank=True)
-    commission = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    error_message = models.TextField(blank=True)
+    external_order_id = models.CharField(max_length=100, blank=True, null=True)
+    external_trade_id = models.CharField(max_length=100, blank=True, null=True)
+    snaptrade_order_id = models.CharField(max_length=100, blank=True, null=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     filled_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "trades"
+        db_table = "Trades"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["portfolio", "stock"]),
+            models.Index(fields=["portfolio", "status"]),
             models.Index(fields=["status", "created_at"]),
         ]
 
-        
-class Performance(models.Model):
+
+class PerformanceMetric(models.Model):
     portfolio = models.ForeignKey(
         Portfolio, on_delete=models.CASCADE, related_name="performance_metrics"
     )
@@ -109,9 +108,9 @@ class Performance(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "performance_metrics"
+        db_table = "PerformanceMetrics"
         unique_together = ("portfolio", "date")
         ordering = ["-date"]
-        indexes = (
+        indexes = [
             models.Index(fields=["portfolio", "date"]),
-        )
+        ]

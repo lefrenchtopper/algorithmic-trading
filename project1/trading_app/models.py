@@ -76,7 +76,7 @@ class TradingSignal(models.Model):
 
 
 class RebalanceSignal(models.Model):
-    data = models.DateField(db_index=True)
+    date = models.DateField(db_index=True)
     total_stocks_analyzed = models.IntegerField()
     buy_signals_generated = models.IntegerField()
     sell_signals_generated = models.IntegerField()
